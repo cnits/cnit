@@ -37,7 +37,7 @@
 				$n -= $const;
 			}
 			return array(
-				$year => $m . '_Q' . ceil($n / 3)
+				strval($year) => $m . '_Q' . ceil($n / 3)
 			);
 		}
 	
@@ -67,14 +67,35 @@
 			}
 			return $dateProcess->format('W');
 		}
+
+		public static function generateQuartersOfYear($year, $month){
+			$quarters = array();
+			if(!is_numeric($year) || empty($year)){
+				$year = date('Y');
+			}
+			if(!is_numeric($month) || $month > 12 || $month < 0){
+				$month = 1;
+			}else{
+				$month = intval($month);
+			}
+			$date = new \DateTime();
+			$d = $date -> setDate($year, $month, 1);
+			$i = 0;
+			do{
+				$rs = self::getQuarterOfDate($d -> format('d-M-Y'), $year, $month);
+				if(isset($rs[$year])){
+					$quarters[] = $rs[$year];
+				}
+				$d = $date -> add(\DateInterval::createFromDateString('1 months'));
+				$i++;
+			}while($i < 12);
+			return $quarters;
+		}
 	}
-	
+	echo "<pre>";
 	//var_dump(_Class::getQuarterOfDate('12-Jun-09', 2010));
 	//$s = date_parse_from_format('m/d/Y', '2/14/2014');
-	$array = array();
-	$bizObjectName = substr('CrmAccountEntity', 0, strlen('CrmAccountEntity') - 6);
-	$bizObjectName = str_replace("Entity", "Biz", "CrmAccountEntity");
-	var_dump($bizObjectName);
+	var_dump(_Class::generateQuartersOfYear(2014, 6));
 	
 	
 	
