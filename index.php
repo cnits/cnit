@@ -84,7 +84,11 @@
 			do{
 				$rs = self::getQuarterOfDate($d -> format('d-M-Y'), $year, $month);
 				if(isset($rs[$year])){
-					$quarters[] = $rs[$year];
+					$quarters[] = array(
+						'MQ' => $rs[$year],
+						'CY' => $d -> format('Y'),
+						'FM' => $d -> format('m')
+					);
 				}
 				$d = $date -> add(\DateInterval::createFromDateString('1 months'));
 				$i++;
