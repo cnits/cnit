@@ -99,11 +99,15 @@
 	echo "<pre>";
 	//var_dump(_Class::getQuarterOfDate('12-Jun-09', 2010));
 	//$s = date_parse_from_format('m/d/Y', '2/14/2014');
-	var_dump(_Class::generateQuartersOfYear(2014, 6));
-	
-	
-	
-	
+	//var_dump(_Class::generateQuartersOfYear(2014, 6));
+
+	$lastDate = new \DateTime('2014-09-22T08:30:00.610Z');
+	$sDate = new \DateTime('2014-09-22T08:30:00.610Z');
+
+	//$lastDate->sub(\DateInterval::createFromDateString('3 days'));
+	$sDate -> setTimezone(new \DateTimeZone("America/Los_Angeles"));
+	var_dump($lastDate->format('Y-m-d H:i:s'));
+	var_dump($sDate->format('Y-m-d H:i:s'));
 	
 	
 ?>
