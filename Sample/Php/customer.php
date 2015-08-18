@@ -130,7 +130,8 @@ $newAccountID = $xml['id'];
 
 
 // Use SimpleXML to create a XML document for a new customer.
-$root = new SimpleXMLElement ('<Customer></Customer>');
+
+$root = new SimpleXMLElement ('<Customer></Customer>');
 $account = $root->addChild('Account');
 
 // Bind the customer to the previously created account using the account id.
@@ -179,7 +180,8 @@ $xml = makeHttpRequest($baseURL, 'Customer?', $token, 'GET', NULL);
 // Iterate through the list and retrieve each individual customer by ID. Since there are potentially
 // many customers we use the self throttling logic to prevent too many requests from hitting the 
 // service desk and triggering the throttling mechanism.
-$lastRequestTime = 0;
+
+$lastRequestTime = 0;
 foreach ($xml->Customer as $customer) {
   $customerID  = $customer['id'];
   $lastRequestTime = microtime();
@@ -187,5 +189,4 @@ foreach ($xml->Customer as $customer) {
   throttleRequest ($lastRequestTime, $requestsPerMinute);
   print "\n    ".$customerXML->asXML()."\n";
 }
-
 ?>
