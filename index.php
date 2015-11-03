@@ -131,6 +131,27 @@
             }
             return $encodedStr;
         }
+
+        public $input = array(
+            array("uID" => 1, "pID" => null),
+            array("uID" => 2, "pID" => 1),
+            array("uID" => 3, "pID" => 2),
+            array("uID" => 14, "pID" => 3),
+            array("uID" => 15, "pID" => 3),
+            array("uID" => 16, "pID" => 3),
+            array("uID" => 17, "pID" => 16),
+            array("uID" => 18, "pID" => 16),
+            array("uID" => 19, "pID" => 1),
+        );
+
+        public function recursive($pId = null, &$result = array()){
+            foreach($this->input as $item){
+                if($item["pID"] == $pId){
+                    $result[] = $item;
+                    self::recursive($item["uId"], $result);
+                }
+            }
+        }
 	}
 	/*echo "<pre>";
 	//var_dump(_Class::getQuarterOfDate('12-Jun-09', 2010));
