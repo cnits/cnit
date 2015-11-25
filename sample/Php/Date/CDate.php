@@ -1,39 +1,40 @@
 <?php
 /*
- * Code Owner: Cnit
+ * Code Owner: CNIT
  * Modified Date: 11/25/2015
  * Modified By: Phong Lam
  */
+namespace CNIT;
 
 class CDate {
 
-    public static function getDateTime($string, $timezone = false, $format = null)
+    public static function getDateTime($datetime, $timezone = false, $format = null)
     {
-        if(empty($string)){
-            return '';
+        if(empty($datetime)){
+            $datetime = 'now';
         }else{
             $_fm = 'Y-m-d h:i:s';
-            if(is_string($string)){
-                if(strtotime($string) == false || strtotime($string) == -1){
-                    return 'Invalid Date';
+            if(is_string($datetime)){
+                if(strtotime($datetime) == false || strtotime($datetime) == -1){
+                    $datetime = 'now';
                 }
             }else{
-                if(is_array($string)){
-                    $string = isset($string['date'])?$string['date']:'';
+                if(is_array($datetime)){
+                    $datetime = isset($datetime['date'])? $datetime['date']: 'now';
                 }
                 else
-                    if(is_object($string) && $string instanceof \DateTime){
-                        $string = $string->format($_fm);
+                    if(is_object($datetime) && $datetime instanceof \DateTime){
+                        $datetime = $datetime->format($_fm);
                     }else{
-                        if(is_object($string) && $string instanceof \MongoDate){
-                            $string = date($_fm, floatval($string->sec) + floatval($string->usec/1000000));
+                        if(is_object($datetime) && $datetime instanceof \MongoDate){
+                            $datetime = date($_fm, floatval($datetime->sec) + floatval($datetime->usec/1000000));
                         }else{
-                            return 'Invalid Date';
+                            $datetime = 'now';
                         }
                     }
             }
         }
-        $dd = new \DateTime($string, new \DateTimeZone('UTC'));
+        $dd = new \DateTime($datetime, new \DateTimeZone('UTC'));
         if($timezone === false){
             $timezone = date_default_timezone_get();
         }
@@ -49,54 +50,57 @@ class CDate {
      * Author: Phong Lam
      * Functionality: Get quarter of date in concrete year
      */
-    public static function getQuarterOfDate($strdate, $year, $startmonth = 1) {
-        //setup $startmonth value
-        if(!is_numeric($startmonth) || $startmonth > 12 || $startmonth < 0){
-            $startmonth = 1;
+    public static function getQuarterOfDate($date, $year, $start_month = 1) {
+        // Start Month:
+        if(!is_numeric($start_month) || $start_month > 12 || $start_month < 0){
+            $start_month = 1;
         }else{
-            $startmonth = intval($startmonth);
+            $start_month = intval($start_month);
         }
-        //setup $endmonth value
-        $endmonth = 12;
-        if($startmonth > 1){
-            $endmonth = $startmonth - 1;
+        // End Month:
+        $end_month = 12;
+        if($start_month > 1){
+            $end_month = $start_month - 1;
         }
-        //calculate quarter of date
-        $n = intval(date('n', strtotime($strdate)));
-        $m = date('M', strtotime($strdate));
-        $y = floatval(date('Y', strtotime($strdate)));
+        // calculate quarter of date:
+        $n = intval(date('n', strtotime($date)));
+        $m = date('M', strtotime($date));
+        $y = floatval(date('Y', strtotime($date)));
         $year = floatval($year);
-        if ($y < $year || ($y == $year && $n < $startmonth) || ($y > $year && $n > $endmonth) || $y > $year + 1) {
+        if ($y < $year || ($y == $year && $n < $start_month)
+            || ($y > $year && $n > $end_month) || $y > $year + 1) {
             return null;
         } else {
-            $const = 0;
-            if ($n >= $startmonth) {
-                $const = $startmonth - 1;
+            if ($n >= $start_month) {
+                $const = $start_month - 1;
             } else {
-                $const = $endmonth - 12;
+                $const = $end_month - 12;
             }
             $n -= $const;
         }
+        //Fc ~ Fiscal
         return array(
-            strval($year) => $m . '_Q' . ceil($n / 3)
+            "FcYear" => $year,
+            "FcMonth" => $m,
+            "FcQuarter" => ceil($n /3)
         );
     }
 
-    public static function getFiscalYearOfDate($strdate = '', $startmonth = 1){
-        if(!is_numeric($startmonth) || $startmonth > 12 || $startmonth < 0){
-            $startmonth = 1;
+    public static function getFiscalYearOfDate($date = '', $start_month = 1){
+        if(!is_numeric($start_month) || $start_month > 12 || $start_month < 0){
+            $start_month = 1;
         }else{
-            $startmonth = intval($startmonth);
+            $start_month = intval($start_month);
         }
-        if(strtotime($strdate) === false || strtotime($strdate) == -1){
-            $strdate = date('d-M-Y h:i:s A');
+        if(strtotime($date) === false || strtotime($date) == -1){
+            $date = date('d-M-Y h:i:s A');
         }
-        $n = intval(date('n', strtotime($strdate)));
-        $y = floatval(date('Y', strtotime($strdate)));
-        if($n >= $startmonth){
-            return $y;
+        $n = intval(date('n', strtotime($date)));
+        $year = floatval(date('Y', strtotime($date)));
+        if($n >= $start_month){
+            return $year;
         }else{
-            return --$y;
+            return --$year;
         }
     }
 
@@ -124,16 +128,52 @@ class CDate {
         $i = 0;
         do{
             $rs = self::getQuarterOfDate($d -> format('d-M-Y'), $year, $month);
-            if(isset($rs[$year])){
+            if(is_array($rs) && count($rs) > 0){
+                //Cd ~ Calendar
                 $quarters[] = array(
-                    'MQ' => $rs[$year],
-                    'CY' => $d -> format('Y'),
-                    'FM' => $d -> format('m')
+                    'FcMonth' => $rs["FcMonth"],
+                    'FcQuarter' => $rs["FcQuarter"],
+                    'CdYear' => $d -> format('Y')
                 );
             }
             $d = $date -> add(\DateInterval::createFromDateString('1 months'));
             $i++;
-        }while($i < 12);
+        } while ($i < 12);
         return $quarters;
+    }
+
+    public static function getDateInLinux() {
+        $cmd = 'date +%z';
+        return exec($cmd);
+    }
+
+    public static function getOffsetTZ($timezone = "UTC") {
+        if(empty($timezone)) {
+            $timezone = "UTC";
+        }
+        $date = new \DateTime('now', new \DateTimeZone($timezone));
+        $os =  $date->getOffset();
+        $os = $os / 3600;
+        if($os > 0) {
+            $offset = '+0'.$os.':00';
+        } elseif($os < 0) {
+            $os = $os*(-1);
+            $offset = '-0'.$os.':00';
+        } else {
+            $offset = "00:00";
+        }
+        return $offset;
+    }
+
+    public static function add($date = 'now', $interval = "1 day") {
+        $date = new \DateTime($date);
+        $date ->add(\DateInterval::createFromDateString($interval));
+        return $date;
+    }
+
+    public static function sub($date = 'now', $interval = "1 day") {
+        $date = new \DateTime($date);
+        $date ->sub(\DateInterval::createFromDateString($interval));
+        return $date;
     }
 }
