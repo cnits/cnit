@@ -9,11 +9,11 @@ class Hash {
     public $str;
 
     public function __construct($_str){
-        //Todo: return string value with length = 32
         $this -> str = $_str;
     }
 
     public function _md5(){
+        //Todo: return string value with length = 32
         return md5($this -> str);
     }
 
