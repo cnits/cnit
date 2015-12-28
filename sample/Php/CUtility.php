@@ -44,4 +44,9 @@ final class CUtility
         }
         return $encodedStr;
     }
+	
+	public static function segregateString($str) {
+		//$str = preg_replace('/([a-z0-9])?([A-Z])/','$1-$2', $str);
+        return trim(preg_replace("/([A-Z])/", " $0", $str));
+	}
 }
