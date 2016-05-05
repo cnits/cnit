@@ -5,12 +5,75 @@
         <title>C-NIT</title>
         <script src="/lib/built-in/angularjs/angular.min.js"></script>
         <script src="app/js/cnit.js"></script>
+        <script src="/lib/built-in/reactjs/react.min.js"></script>
+        <script src="/lib/built-in/reactjs/react-dom.min.js"></script>
+        <script src="/lib/built-in/libs/jquery-1.12.3.min.js"></script>
+        <script type="text/javascript">
+        /** @jsx React.DOM */
+            $(document).ready(function(){
+              var List = React.createClass({
+                render: function(){
+                  return (
+                    <ul>
+                      {
+                        this.props.items.map(function(item) {
+                          return <li key={item}>{item}</li>
+                        })
+                       }
+                    </ul>
+                  )
+                }
+              });
+
+              var FilteredList = React.createClass({
+              filterList: function(event){
+              var updatedList = this.state.initialItems;
+              updatedList = updatedList.filter(function(item){
+                return item.toLowerCase().search(event.target.value.toLowerCase()) !== -1;
+              });
+              this.setState({items: updatedList});
+              },
+              getInitialState: function(){
+               return {
+                 initialItems: [
+                   "Apples",
+                   "Broccoli",
+                   "Chicken",
+                   "Duck",
+                   "Eggs",
+                   "Fish",
+                   "Granola",
+                   "Hash Browns"
+                 ],
+                 items: []
+               }
+              },
+              componentWillMount: function(){
+              this.setState({items: this.state.initialItems})
+              },
+              render: function(){
+              return (
+                <div className="filter-list">
+                  <input type="text" placeholder="Search" onChange={this.filterList}/>
+                <List items={this.state.items}/>
+                </div>
+              );
+              }
+              });
+              console.log(React);
+                React.renderComponent(<FilteredList/>, document.getElementById('mount-point'));
+            });
+        </script>
+
     </head>
     <body>
         <div>
             <input type="text" ng-model="cnit" placeholder="Enter your text here...">
             <h1>C-NIT: {{cnit}}</h1>
         </div>
+
+        <div id="mount-point">123</div>
+
         <div ng-controller="PlayerController">
             <button ng-click="play()" ng-show="!playing">Chơi</button>
             <button ng-click="stop()" ng-show="playing">Dừng</button>
