@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+        crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+        crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <h1>Hello, world!</h1>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <form class="form-horizontal" role="form" name="createneworderForm" id="createneworderForm" ng-show="!isCompleted">
+        <div class="col-md-12">
+            <h4>Order Info</h4>
+            <!--Left-->
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">SHO#:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" tabindex="1" class="form-control input-sm" ng-disabled="true" ng-model="orderData.Ordercode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Order Type <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.$touched && createneworderForm.OrderArea.$invalid }">
+                        <select class="form-control input-sm" tabindex="2" ng-change="changeOrderArea();" ng-model="OrderArea.Code" ng-disabled="isEdit"
+                            data-tooltip-error name="OrderArea" required>
+                        <option ng-repeat="area in AreaCombo" 
+                                value="{{area.Code}}">
+                            {{area.Name}}
+                        </option>
+                    </select>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.OrderArea.$touched && createneworderForm.OrderArea.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">CUSTID <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.custid.$touched && createneworderForm.custid.$invalid }">
+                        <select class="form-control input-sm" tabindex="3" ng-model="orderData.Partnerid" data-tooltip-error name="custid" ng-change="selectCust()"
+                            ng-disabled="isEdit" required>
+                        <option class="placeholder-option" value="">--Select One--</option>
+                        <option ng-repeat="cust in custData" ng-selected="orderData.Partnerid == cust.Id"
+                                value="{{cust.Id}}">
+                            {{cust.Custid}}
+                        </option>
+                    </select>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.custid.$touched && createneworderForm.custid.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Req By <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.reqby.$touched && createneworderForm.reqby.$invalid }">
+                        <select class="form-control input-sm" tabindex="4" data-tooltip-error ng-model="orderData.Requestby" name="reqby" required>
+                        <option class="placeholder-option" value="">--Select One--</option>
+                        <option ng-repeat="user in userData" ng-selected="orderData.Requestby == user.Id"
+                                value="{{user.Id}}">
+                            {{user.Fullname}}
+                        </option>
+                        <option ng-if="userInactive" ng-selected="userInactive"
+                                value="{{orderData.Requestby}}">
+                            {{orderData.Requestby}} 
+                        </option>
+                    </select>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.reqby.$touched && createneworderForm.reqby.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Req# <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.reqno.$touched && createneworderForm.reqno.$invalid }">
+                        <input type="text" class="form-control input-sm text-uppercase" data-tooltip-error name="reqno" ng-model="orderData.Requestno"
+                            tabindex="5" ng-pattern="reqNoPattern" patern-type="reqNo" required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.reqno.$touched && createneworderForm.reqno.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Req DTM <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" ng-disabled="true" tabindex="6" ng-model="orderData.Requestdate" name="reqdtm">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Req Type <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.reqtype.$touched && createneworderForm.reqtype.$invalid }">
+                        <select class="form-control input-sm" ng-model="orderData.Requesttypeid" data-tooltip-error tabindex="7" name="reqtype" ng-change="selectReqtype()"
+                            required>
+                        <option class="placeholder-option" value="">--Select One--</option>
+                        <option ng-repeat="reqtype in requsettypeData"
+                                ng-selected="orderData.Requesttypeid == reqtype.Id" value="{{reqtype.Id}}">
+                            {{reqtype.Reqtype}}
+                        </option>
+                    </select>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.reqtype.$touched && createneworderForm.reqtype.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Warranty <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.warranty.$touched && createneworderForm.warranty.$invalid }">
+                        <select class="form-control input-sm" ng-model="orderData.Warrantyid" data-tooltip-error tabindex="8" name="warranty" required>
+                        <option class="placeholder-option" value="">--Select One--</option>
+                        <option ng-repeat="warranty in warrantyData"
+                                ng-selected="orderData.Warrantyid == warranty.Id" value="{{warranty.Id}}">
+                            {{warranty.Warrantycode}}
+                        </option>
+                    </select>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.warranty.$touched && createneworderForm.warranty.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Status <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" ng-model="orderData.Status_Name" tabindex="9" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">CUST PO#:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" ng-model="orderData.Oemcustpo" tabindex="10" name="custpo">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Est Ship DTM:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <div class="input-group ui-datepicker">
+                            <input type="text" class="form-control input-sm" uib-datepicker-popup="{{format}}" ng-model="orderData.Estshipdate" is-open="starttime.opened"
+                                close-on-date-selection="true" on-open-focus="true" close-text="Done" name="estshipdate" max-date="today"
+                                min-date="mindate" max-mode="day" ng-readonly="true" tabindex="11">
+                            <!--<input type="text"
+                               class="form-control input-sm"
+                               tabindex="11"
+                               ng-model="orderData.Estshipdate"
+                               is-open="opened"
+                               max-date="today"
+                               min-date="mindate"
+                               max-mode="day"
+                               close-text="Close">-->
+                            <span class="input-group-addon datepicker-icon" ng-click="starttime.open($event)"><i
+                                class="fa fa-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Ship Method <span class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.shipmethod.$touched && createneworderForm.shipmethod.$invalid }">
+                        <select class="form-control input-sm" ng-model="orderData.Shipmethid" data-tooltip-error tabindex="12" name="shipmethod"
+                            required>
+                        <option class="placeholder-option" value="">--Select One--</option>
+                        <option ng-repeat="shipmethod in shipmethodData"
+                                ng-selected="orderData.Shipmethid == shipmethod.Id" value="{{shipmethod.Id}}">
+                            {{shipmethod.Shipmethod}}
+                        </option>
+                    </select>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.shipmethod.$touched && createneworderForm.shipmethod.$invalid"></span>
+                    </div>
+                </div>
+            </div>
+            <!--Middle-->
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">CUSTID:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" name="oemcustid" tabindex="13" ng-model="orderData.Oemcustid">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">CUST Name <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9 has-feedback form-edit" ng-class="{ 'has-error': createneworderForm.oemcustname.$touched && createneworderForm.oemcustname.$invalid }">
+                        <div class="input-group">
+                            <input type="text" class="form-control input-sm" style="padding-right: 1px" tabindex="14" data-tooltip-error ng-model="orderData.Oemcustname"
+                                name="oemcustname" required>
+                            <span class="input-group-addon" data-toggle="modal" data-target="#suggestModal" ng-click="isDelete = false" ng-disabled="addressSuggestionData.length <= 0"
+                                style="padding: 3px 10px; border-top-right-radius: 3px ; border-bottom-right-radius: 3px">
+                            <i class="fa fa-search"></i>
+                        </span>
+                            <div class="modal fade" id="suggestModal" role="dialog" ui-not-close-on-click>
+                                <div class="modal-dialog modal-addsuggestion" style="width:{{setWidth}}">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <b>ADDRESS SUGGESTION</b>
+                                            <div class="pull-right">
+                                                <button class="btn button-transparent dropdown-toggle btn-xs" type="button" aria-haspopup="true" id="editOrder_addressClose"
+                                                    aria-expanded="false" data-dismiss="modal">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                            </div>
+                                        </div>
+                                        <div class="modal-body" style="padding: 0 14px 0 10px;">
+                                            <div class="col-sm-12 notification-order" ng-show="isDelete" style="padding: 0px; float: left; margin-bottom: 10px;">
+                                                <img src="/images/unexpired.png" /> &nbsp;&nbsp; Deleted successfully!
+                                            </div>
+                                            <div class="form-group" ng-show="addressSuggestionData.length > 0">
+                                                <div class="col-md-12 col-xs-12 add-suggest" ng-repeat="address in addressSuggestionData">
+
+                                                    <div class="col-md-10 content-suggest" ng-click="selectAddress(address)">
+                                                        <div class="item-info" style="font-weight: bold;">
+                                                            {{address.Oemcustname}}
+                                                        </div>
+                                                        <div style="width: 100%; word-wrap: break-word">
+                                                            {{address.StreetAddress1.length > 0 ? address.StreetAddress1 + ', ' : ''}} {{ address.StreetAddress1.length
+                                                            <=0 ? '' : address.AddressCountry | limitTo: 60 }} {{ address.AddressCountry.length>
+                                                                60 ? '...' : ''}}
+                                                        </div>
+                                                        <div class="item-info">
+                                                            {{address.StreetAddress2.length > 0 ? address.StreetAddress2 + ', ' : ''}} {{ address.StreetAddress2.length
+                                                            <=0 ? '' : address.AddressCountry | limitTo: 60 }} {{ address.AddressCountry.length>
+                                                                60 ? '...' : ''}}
+                                                        </div>
+                                                        <div class="item-info">
+                                                            {{address.StreetAddress3.length > 0 ? address.StreetAddress3 + ', ' : ''}} {{ address.StreetAddress3.length
+                                                            <=0 ? '' : address.AddressCountry | limitTo: 60 }} {{ address.AddressCountry.length>
+                                                                60 ? '...' : ''}}
+                                                        </div>
+                                                        <div ng-if="address.Phone || address.Fax" class="item-info"><span ng-if="address.Phone"><b>Tel: </b>{{address.Phone}}</span>
+                                                            <span ng-if="address.Fax"> - <b>Fax: </b>{{address.Fax}}</span>
+                                                        </div>
+                                                        <div ng-if="address.Email" class="item-info"><b>Email: </b>{{address.Email}}</div>
+                                                    </div>
+                                                    <div class="col-md-2" style="height: 76px;">
+                                                        <div class="del-suggestion">
+                                                            <button type='button' class="btn btn-primary" ng-click="deleteSuggestion(address)"><i class="fa fa-trash" style="margin-right: 0px"></i>
+                                                        </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div ng-show="addressSuggestionData.length <= 0" style="color: #afafaf; font-size: 24px; text-align: center; height: 200px; padding-top: 60px">
+                                                There is no address to suggest
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" style="top: -5px; right: -2px" ng-show="createneworderForm.oemcustname.$touched && createneworderForm.oemcustname.$invalid"></span>
+                        <!--<div class="input-group">-->
+                        <!--<input type="text" class="form-control input-sm" data-tooltip-error-->
+                        <!--ng-model="orderData.Oemcustname" name="oemcustname" required>-->
+                        <!--<span class="input-group-addon" style="padding: 3px 12px" ng-click="test()"><i-->
+                        <!--class="fa fa-search"></i></span>-->
+                        <!--<span class="fa fa-exclamation-triangle form-control-feedback"-->
+                        <!--style="top: -4px; right: -2px"-->
+                        <!--ng-show="createneworderForm.oemcustname.$touched && createneworderForm.oemcustname.$invalid"></span>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Contact <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.contact.$touched && createneworderForm.contact.$invalid }">
+                        <input type="text" data-tooltip-error class="form-control input-sm" tabindex="15" ng-model="orderData.ShipTo_Contact" name="contact"
+                            required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.contact.$touched && createneworderForm.contact.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Phone Number:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.phonenumber.$touched && createneworderForm.phonenumber.$invalid }">
+                        <input data-tooltip-error type="text" ng-pattern="phoneNumberPattern" patern-type="phone" minlength="10" maxlength="50" tabindex="16"
+                            class="form-control input-sm" name="phonenumber" ng-model="orderData.ShipTo_Phone">
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.phonenumber.$touched && createneworderForm.phonenumber.$error.pattern"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Fax Number:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" name="faxnumber" tabindex="17" ng-model="orderData.ShipTo_Fax">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Email:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.email.$touched && createneworderForm.email.$invalid }">
+                        <input type="email" data-tooltip-error class="form-control input-sm" name="email" tabindex="18" ng-pattern="emailPattern"
+                            ng-model="orderData.ShipTo_Email">
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.email.$touched && createneworderForm.email.$error.pattern"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Address 1 <span class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.address1.$touched && createneworderForm.address1.$invalid }">
+                        <input type="text" data-tooltip-error class="form-control input-sm" tabindex="19" ng-model="orderData.ShipTo_Address1" name="address1"
+                            required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.address1.$touched && createneworderForm.address1.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Address 2:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" name="address2" tabindex="20" ng-model="orderData.ShipTo_Address2">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Address 3:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" name="address3" tabindex="21" ng-model="orderData.ShipTo_Address3">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">City <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.city.$touched && createneworderForm.city.$invalid }">
+                        <input type="text" class="form-control input-sm" name="city" data-tooltip-error tabindex="22" ng-model="orderData.ShipTo_City"
+                            required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.city.$touched && createneworderForm.city.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">State/Province <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.state.$touched && createneworderForm.state.$invalid }">
+                        <input type="text" class="form-control input-sm" name="state" data-tooltip-error tabindex="23" ng-model="orderData.ShipTo_State"
+                            required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.state.$touched && createneworderForm.state.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Zip/Postal Code <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.zipcode.$touched && createneworderForm.zipcode.$invalid }">
+                        <input type="text" class="form-control input-sm" name="zipcode" data-tooltip-error tabindex="24" ng-model="orderData.ShipTo_Zipcode"
+                            required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.zipcode.$touched && createneworderForm.zipcode.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Country <span
+                        class="required-field">*</span>:</label>
+                    <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.country.$touched && createneworderForm.country.$invalid }">
+                        <input type="text" class="form-control input-sm" name="country" data-tooltip-error tabindex="25" ng-model="orderData.ShipTo_Country"
+                            required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.country.$touched && createneworderForm.country.$invalid"></span>
+                    </div>
+                </div>
+            </div>
+            <!--Right-->
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Commit code:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" ng-disabled="true" name="commitcode" tabindex="26" ng-model="orderData.Commitid_Commitcode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">SO#:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" ng-disabled="!isEdit" name="so" tabindex="27" ng-model="orderData.So">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Ref1#:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <input type="text" class="form-control input-sm" tabindex="28" name="ref1" ng-model="orderData.Ref1">
+                    </div>
+                </div>
+                <div ng-if="OrderArea.Code == OrderRegion.INTER">
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-3 input-sm">Importer Address <span
+                            class="required-field">*</span>:</label>
+                        <div class="col-md-8 col-sm-9 has-feedback form-edit" ng-class="{ 'has-error': createneworderForm.importerAddress.$touched && createneworderForm.importerAddress.$invalid }">
+                            <div class="input-group">
+                                <input type="text" class="form-control input-sm" name="importerAddress" data-tooltip-error tabindex="29" ng-model="Inter.ImporterAddress"
+                                    required>
+                                <span class="input-group-addon" data-toggle="modal" data-target="#suggestOrderRegion" style="padding: 3px 10px; border-top-right-radius: 3px ; border-bottom-right-radius: 3px">
+                                <i class="fa fa-search"></i>
+                            </span>
+                                <div class="modal fade" id="suggestOrderRegion" role="dialog" ui-not-close-on-click>
+                                    <div class="modal-dialog modal-addsuggestion" style="width:{{setWidth}}">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <b>INTERNATIONAL ADDRESSES SUGGESTION</b>
+                                                <div class="pull-right">
+                                                    <button class="btn button-transparent dropdown-toggle btn-xs" type="button" aria-haspopup="true" id="region_address_id" aria-expanded="false"
+                                                        data-dismiss="modal">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body" style="padding: 0 14px 0 10px;">
+                                                <div class="form-group" ng-show="regionList.length > 0">
+                                                    <div class="col-md-12 col-xs-12 add-suggest" ng-repeat="region in regionList">
+                                                        <div class="col-md-10 content-suggest" ng-click="chooseRegion(region)">
+                                                            <div class="item-info">
+                                                                <b>Company: </b>{{region.ImporterCompany}} - <b>Contact: </b>{{region.ImporterContact}}<br/>
+                                                                <b>Address: </b>{{region.ImporterAddress}} - <b>Phone: </b>{{region.ImporterPhone}}<br/>
+                                                                <b>VAT/Business ID: </b>{{region.VATBusinessID}} - <b>IncoTerm: </b>{{region.IncoTerm}}<br/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2" style="height: 76px;">
+                                                            <div class="del-suggestion">
+                                                                <button type='button' class="btn btn-primary" ng-click="deleteRegion(region)"><i class="fa fa-trash" style="margin-right: 0px"></i>
+                                                            </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div ng-show="regionList.length <= 0" style="color: #afafaf; font-size: 24px; text-align: center; height: 200px; padding-top: 60px">
+                                                    There is no international address to suggest
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="fa fa-exclamation-triangle form-control-feedback" style="top: -5px; right: -2px" ng-show="createneworderForm.importerAddress.$touched && createneworderForm.importerAddress.$invalid"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-3 input-sm">Importer Company <span
+                            class="required-field">*</span>:</label>
+                        <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.importerCompany.$touched && createneworderForm.importerCompany.$invalid }">
+                            <input type="text" class="form-control input-sm" name="importerCompany" data-tooltip-error tabindex="30" ng-model="Inter.ImporterCompany"
+                                required>
+                            <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.importerCompany.$touched && createneworderForm.importerCompany.$invalid"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-3 input-sm">Importer Contact <span
+                            class="required-field">*</span>:</label>
+                        <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.importerContact.$touched && createneworderForm.importerContact.$invalid }">
+                            <input type="text" data-tooltip-error class="form-control input-sm" tabindex="31" ng-model="Inter.ImporterContact" name="importerContact"
+                                required>
+                            <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.importerContact.$touched && createneworderForm.importerContact.$invalid"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-3 input-sm">Importer Phone <span
+                            class="required-field">*</span>:</label>
+                        <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.importerPhone.$touched && createneworderForm.importerPhone.$invalid }">
+                            <input type="text" data-tooltip-error class="form-control input-sm" tabindex="32" ng-model="Inter.ImporterPhone" name="importerPhone"
+                                required>
+                            <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.importerPhone.$touched && createneworderForm.importerPhone.$invalid"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-3 input-sm">VAT / Business ID# <span class="required-field">*</span>:</label>
+                        <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.importerVATID.$touched && createneworderForm.importerVATID.$invalid }">
+                            <input type="text" data-tooltip-error class="form-control input-sm" tabindex="33" ng-model="Inter.VATBusinessID" name="importerVATID"
+                                required>
+                            <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.importerVATID.$touched && createneworderForm.importerVATID.$invalid"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-3 input-sm">Incoterm <span class="required-field">*</span>:</label>
+                        <div class="col-md-8 col-sm-9" ng-class="{ 'has-error': createneworderForm.Incoterm.$touched && createneworderForm.Incoterm.$invalid }">
+                            <input type="text" data-tooltip-error class="form-control input-sm" tabindex="34" ng-model="Inter.IncoTerm" name="Incoterm"
+                                required>
+                            <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.Incoterm.$touched && createneworderForm.Incoterm.$invalid"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h4>Order's Additional Info</h4>
+                    <label class="control-label col-md-4 col-sm-3 input-sm">Group of Option Info:</label>
+                    <div class="col-md-8 col-sm-9">
+                        <select class="form-control input-sm" ng-model="orderData.Attgroup" name="groupinfo" tabindex="35" ng-change="selectGroupInfo()"
+                            ng-disabled="false">
+                            <option class="placeholder-option" value="">--None--</option>
+                            <option ng-repeat="attgroup in attgroupData" value="{{attgroup._id.$id}}">
+                                {{attgroup.Name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-3 input-sm"></label>
+                    <div class="col-md-8 col-sm-9">
+                        <div class="col-sm-12"><i>Please select the optional group of additional information to accompany
+                                                        with this Order (ie: import/ export numbers)</i></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-8 col-sm-9">
+                        <div class="order-attribute">
+                            <json-editor ng-if="showAtt" schema="attJson"></json-editor>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label class="control-label col-md-2 col-sm-3 input-sm">Cust. Instructions:</label>
+                    <div class="col-md-10 col-sm-9">
+                        <textarea class="form-control input-sm textarea-resize" rows="4" name="custinstruction" tabindex="36" ng-model="orderData.Reqcomment"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2 col-sm-3 input-sm label-view">Internal Instructions:</label>
+                    <div class="col-md-10 col-sm-9">
+                        <textarea class="form-control input-sm textarea-resize" rows="5" name="internalinstruction" tabindex="37" ng-model="orderData.Intcomment"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+        <!--        </div>-->
+        <!--<div class="col-md-6 no-padd-right" style="top:30px;">
+            <div ng-if="orderData.OrderArea.Code == OrderRegion.INTER">
+                <div class="form-group">
+                    <label class="control-label col-sm-4 input-sm">CUSTID:</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="oemcustid"
+                               ng-model="orderData.Oemcustid">
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.contact.$touched && createneworderForm.contact.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">Contact <span
+                            class="required-field">*</span>:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" data-tooltip-error class="form-control input-sm"
+                               ng-model="orderData.ShipTo_Contact" name="contact" required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.contact.$touched && createneworderForm.contact.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.phonenumber.$touched && createneworderForm.phonenumber.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">Phone Number:</label>
+
+                    <div class="col-sm-8">
+                        <input data-tooltip-error type="text" ng-pattern="phoneNumberPattern" patern-type="phone"
+                               minlength="10" maxlength="50"
+                               class="form-control input-sm" name="phonenumber" ng-model="orderData.ShipTo_Phone">
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.phonenumber.$touched && createneworderForm.phonenumber.$error.pattern"></span>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 input-sm">Fax Number:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="faxnumber"
+                               ng-model="orderData.ShipTo_Fax">
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.email.$touched && createneworderForm.email.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">Email:</label>
+
+                    <div class="col-sm-8">
+                        <input type="email" data-tooltip-error class="form-control input-sm" name="email"
+                               ng-pattern="emailPattern" ng-model="orderData.ShipTo_Email">
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.email.$touched && createneworderForm.email.$error.pattern"></span>
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.address1.$touched && createneworderForm.address1.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">Address 1 <span class="required-field">*</span>:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" data-tooltip-error class="form-control input-sm"
+                               ng-model="orderData.ShipTo_Address1" name="address1" required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.address1.$touched && createneworderForm.address1.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 input-sm">Address 2:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="address2"
+                               ng-model="orderData.ShipTo_Address2">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4 input-sm">Address 3:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="address3"
+                               ng-model="orderData.ShipTo_Address3">
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.city.$touched && createneworderForm.city.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">City <span
+                            class="required-field">*</span>:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="city" data-tooltip-error
+                               ng-model="orderData.ShipTo_City" required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.city.$touched && createneworderForm.city.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.state.$touched && createneworderForm.state.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">State/Province <span
+                            class="required-field">*</span>:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="state" data-tooltip-error
+                               ng-model="orderData.ShipTo_State" required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.state.$touched && createneworderForm.state.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.zipcode.$touched && createneworderForm.zipcode.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">Zip/Postal Code <span
+                            class="required-field">*</span>:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="zipcode" data-tooltip-error
+                               ng-model="orderData.ShipTo_Zipcode" required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.zipcode.$touched && createneworderForm.zipcode.$invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-class="{ 'has-error': createneworderForm.country.$touched && createneworderForm.country.$invalid }">
+                    <label class="control-label col-sm-4 input-sm">Country <span
+                            class="required-field">*</span>:</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="country" data-tooltip-error
+                               ng-model="orderData.ShipTo_Country" required>
+                        <span class="fa fa-exclamation-triangle form-control-feedback"
+                              ng-show="createneworderForm.country.$touched && createneworderForm.country.$invalid"></span>
+                    </div>
+                </div>
+            </div>
+            <h4>Order's Additional Info</h4>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label pull-left input-sm" style="padding-left: 0px;">Group of Option
+                        Info:</label>
+                    <div class="col-sm-4">
+                        <select class="form-control input-sm" ng-model="orderData.Attgroup" name="groupinfo"
+                                ng-change="selectGroupInfo()" ng-disabled="true">
+                            <option class="placeholder-option" value="">--None--</option>
+                            <option ng-repeat="attgroup in attgroupData" value="{{attgroup._id.$id}}">
+                                {{attgroup.Name}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12"><i>Please select the optional group of additional information to accompany
+                        with
+                        this Order (ie: import/ export numbers)</i></div>
+            </div>
+            <div class="order-attribute">
+                <json-editor ng-if="showAtt" schema="attJson"></json-editor>
+            </div>
+        </div>-->
+        <div class="col-sm-12 no-padd-right" style="margin-bottom: 10px">
+            <h4>Order Detail</h4>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle btn-xs" id="editOrder_addItem" tabindex="38" ng-click="addItem()"
+                    ng-disabled="createneworderForm.$error.required">
+                    <i class="fa fa-plus"></i>Add Item
+                </button>
+            </div>
+            <div id="contain-panel-addItem">
+            </div>
+            <div class="panel panel-dark panel-addItem" ui-not-close-on-click>
+                <div ng-show="isAddItem" class="panel-heading">
+                    Add Item
+                </div>
+                <div ng-show="isEditItem" class="panel-heading">
+                    Update Item
+                </div>
+                <div class="panel-body">
+                    <div class="form-group" ng-class="{ 'has-error': createneworderForm.itemmaster.$touched && createneworderForm.itemmaster.$invalid }">
+
+                        <label class="control-label col-sm-4 input-sm">Item <span
+                                class="required-field">*</span>:
+                        </label>
+                        <div class="col-sm-8">
+                            <select class="form-control input-sm" data-tooltip-error ng-model="orderDetail.itemmaster" name="itemmaster" ng-options="i as i.Itemmasterid_Partno for i in itemmasterData"
+                                ng-change="selectItemmaster()" ng-selected="orderDetail.itemmaster"></select>
+                            <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.itemmaster.$touched && createneworderForm.itemmaster.$invalid"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4 input-sm">OEM Description: </label>
+
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control input-sm" ng-model="orderDetail.oemdesc" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{ 'has-error': createneworderForm.itemQuantity.$touched && createneworderForm.itemQuantity.$invalid }">
+                        <label class="control-label col-sm-4 input-sm">Quantity <span
+                                class="required-field">*</span>: </label>
+
+                        <div class="col-sm-8">
+                            <!--<input type="number" data-tooltip-error min="1" max="999999999" required-->
+                            <input type="number" data-tooltip-error min="1" max="999999999" required class="form-control input-sm" name="itemQuantity"
+                                id="editOrder_itemQuantity" ng-model="orderDetail.itemqty">
+                            <span class="fa fa-exclamation-triangle form-control-feedback" ng-show="createneworderForm.itemQuantity.$touched && createneworderForm.itemQuantity.$invalid"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer" style="text-align: right">
+                    <button type='button' ng-show="isAddItem" class="btn btn-primary dropdown-toggle btn-xs" ng-click="addItem()">
+                        Add Item
+                    </button>
+                    <button type='button' ng-show="isEditItem" class="btn btn-primary dropdown-toggle btn-xs" ng-click="editItem(editItemClick)">
+                        Change
+                    </button>
+                    <button type='button' class="btn btn-primary dropdown-toggle btn-xs" ng-click="completeAddItem()">Complete
+                    </button>
+                </div>
+            </div>
+            <div ui-grid="detailGrid" ui-grid-pagination ui-grid-auto-resize ui-grid-resize-columns ui-grid-edit ui-grid-cellNav ui-grid-edit-plugin
+                class="grid-orderdetail"></div>
+            <div class="col-sm-12 total-item"><i>Total quantity of Items:
+                    {{orderData.Noitems}}</i></div>
+        </div>
+
+        <div class="col-sm-12 no-padd-right" style="margin-bottom: 10px">
+            <div class="btn-group pull-right">
+                <!--<button type='button' style="margin-right: 0" class="btn btn-primary control-button btn-xs" data-ng-show="isEdit"-->
+                <!--ng-click="upLoadForm()"><i class="fa fa-file-archive-o"></i> Upload Document-->
+                <!--</button>-->
+                <button class="btn btn-primary control-button btn-xs" style="margin-right: 5px" tabindex="39" ng-click="saveOrder()" type="button"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-floppy-o"></i> Save
+                </button>
+                <button class="btn btn-primary control-button btn-xs" ng-click="resetOrder()" type="button" tabindex="40" aria-haspopup="true"
+                    aria-expanded="false" style="margin-right: 5px">
+                    <i class="fa fa-reply"></i> Reset
+                </button>
+            </div>
+        </div>
+    </form>
+
+</body>
+
+</html>

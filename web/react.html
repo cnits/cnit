@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>C-NIT</title>
+    <script src="/lib/built-in/reactjs/react.js"></script>
+    <script src="/lib/built-in/reactjs/react-dom.js"></script>
+    <script src="/lib/built-in/libs/jquery-1.12.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+    <!--<script src="/web/app-react/photo-gallery.js"></script>-->
+
+    <script type="text/javascript">
+        var ExampleApplication = React.createClass({
+            render: function() {
+                var elapsed = Math.round(this.props.elapsed / 100);
+                var seconds = elapsed / 10 + (elapsed % 10 ? '' : '.0');
+                var message =
+                    'React has been successfully running for ' + seconds + ' seconds.';
+                return React.DOM.strong(null, message);
+            }
+        });
+        // Call React.createFactory instead of directly call ExampleApplication({...}) in React.render
+        var ExampleApplicationFactory = React.createFactory(ExampleApplication);
+        var start = new Date().getTime();
+        setInterval(function() {
+            ReactDOM.render(
+                ExampleApplicationFactory({
+                    elapsed: new Date().getTime() - start
+                }),
+                document.getElementById('mount-point')
+            );
+        }, 50);
+    </script>
+</head>
+
+<body>
+    <div id="mount-point"></div>
+    <div id="photo-gallery"></div>
+</body>
+
+</html>
