@@ -6,8 +6,8 @@
         <script src="/lib/built-in/angularjs/angular.min.js"></script>
         <script src="app/js/cnit.js"></script>
     </head>
-    <body>
-        <div>
+    <body ng-controller="RelatedController">
+        <!--<div>
             <input type="text" ng-model="cnit" placeholder="Enter your text here...">
             <h1>C-NIT: {{cnit}}</h1>
         </div>
@@ -17,6 +17,7 @@
             <button ng-click="stop()" ng-show="playing">Dừng</button>
             <button ng-click="tat()" ng-show="playing">Tắt</button>
             Playing audio: {{playing}}
-        </div>
+        </div>-->
+        <tpl-number digit-number="5" ng-val="T" max="2000"></tpl-number>
     </body>
 </html>
