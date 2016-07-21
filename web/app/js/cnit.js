@@ -29,9 +29,13 @@ app.controller('PlayerController', ['$scope', function ($scope) {
 }]);
 
 app.controller('RelatedController', ['$scope', function ($scope) {
-    $scope.T = "";
+    $scope.T = "0";
+    $scope.T2 = "0";
     $scope.$watch("T", function (v) {
-        console.log("Change", v);
+        console.log("Change 1", parseFloat(v));
+    });
+    $scope.$watch("T2", function (v) {
+        console.log("Change 2", parseFloat(v));
     });
 }]);
 
@@ -150,6 +154,69 @@ app.directive("tplNumber", function () {
                             v = parseFloat(l.concat(inputValue));
                         }
                         if (isFinite(scope.max) && v > parseInt(scope.max)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+            };
+        }
+    };
+});
+
+app.directive("tplJqueryNumber", function () {
+    return {
+        restrict: "E",
+        replace: true,
+        scope: {
+            max: "@",
+            ngVal: "=",
+            digitNumber: "@"
+        },
+        template: '<input type="text" ng-keyup="bindingNumber()" ng-keydown="validating($event)"/>',
+        compile: function () {
+            return {
+                post: function (scope, ele, attr, formCtrl) {
+                    ele.val(0);
+                    scope.$watch("digitNumber", function (val) {
+                        if (isFinite(val)) {
+                            $(ele).number(true, scope.digitNumber);
+                        }
+                    });
+                    scope.bindingNumber = function () {
+                        scope.ngVal = ele.val().replace(/\,/g, "");
+                    };
+                    scope.validating = function (e) {
+                        if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                            var iVal = fromKeyCode(e.keyCode);
+                            var point = ele.val().toString().indexOf(".");
+                            if (checkLimitation(iVal)) {
+                                if ((-1 !== point && e.target.selectionStart <= point)) {
+                                    e.preventDefault();
+                                }
+                            }
+                        }
+                    };
+                    function replaceAt(str, index, replace) {
+                        return str.substr(0, index) + replace + str.substr(index + replace.length);
+                    }
+
+                    function fromKeyCode(keyCode) {
+                        var code = (96 <= keyCode && keyCode <= 105) ? keyCode - 48 : keyCode;
+                        return String.fromCharCode(code);
+                    }
+
+                    function checkLimitation(inputValue) {
+                        if (!isFinite(inputValue)) {
+                            return true;
+                        }
+                        var s = ele.val(), p = s.indexOf(".");
+                        if (p !== -1) {
+                            s = s.substr(0, p);
+                        }
+                        s.concat(inputValue);
+                        if (isFinite(scope.max) && s.length > parseInt(scope.max)) {
                             return true;
                         } else {
                             return false;
