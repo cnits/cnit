@@ -30,7 +30,7 @@ app.controller('PlayerController', ['$scope', function ($scope) {
 
 app.controller('RelatedController', ['$scope', function ($scope) {
     $scope.T = "";
-    $scope.$watch("T", function(v) {
+    $scope.$watch("T", function (v) {
         console.log("Change", v);
     });
 }]);
@@ -55,7 +55,7 @@ app.directive("tplNumber", function () {
                         var arrayAllow = [46, 8, 27, 13, 38, 40, 190, 110];
                         if (e.keyCode >= 48 && e.keyCode <= 57) {
                             var iVal = String.fromCharCode(e.keyCode);
-                            if(checkMaxValue(ele.val(), iVal)) {
+                            if (checkMaxValue(iVal)) {
                                 e.preventDefault();
                             }
                             var point = ele.val().toString().indexOf(".");
@@ -70,17 +70,18 @@ app.directive("tplNumber", function () {
                                     ele.val(replaceAt(ele.val(), e.target.selectionStart, iVal));
                                     e.target.selectionStart = cur_pos + 1;
                                 }
-                                scope.ngVal = ele.val();
                             }
+                            scope.ngVal = ele.val();
                         }
-                        if ((e.target.value.indexOf('.') !== -1) && ([190, 110].indexOf(e.keyCode) !== -1)) {
+                        if ((ele.val().indexOf('.') !== -1) && ([190, 110].indexOf(e.keyCode) !== -1)) {
+                            //Do not allow entering more than one "." sign
                             e.preventDefault();
                         }
                         if ((arrayAllow.indexOf(e.keyCode) !== -1) ||
                             (e.keyCode === 65 && e.ctrlKey === true) || (e.keyCode === 67 && e.ctrlKey === true) ||
                             (e.keyCode === 88 && e.ctrlKey === true) || (e.keyCode >= 35 && e.keyCode <= 39)) {
                             // Allow: delete, backspace, escape, enter , Ctrl+A+C+X , home, end, left, right, point
-                            if(ele.val() == "") {
+                            if (ele.val() == "") {
                                 ele.val(0);
                             }
                             scope.ngVal = ele.val();
@@ -89,20 +90,17 @@ app.directive("tplNumber", function () {
                         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
                             e.preventDefault();
                         }
-                        if ((e.which === 46) && (e.target.value.indexOf('.') === -1)) {
+                        if ((e.which === 46) && (ele.val().indexOf('.') === -1)) {
                             setTimeout(function () {
-                                if (e.target.value.substring(e.target.value.indexOf('.')).length > 3) {
-                                    ele.val(e.target.value.substring(0, e.target.value.indexOf('.') + 3));
+                                if (ele.val().substring(ele.val().indexOf('.')).length > 3) {
+                                    ele.val(ele.val().substring(0, ele.val().indexOf('.') + 3));
                                 }
                             }, 1);
                         }
-                        if (parseInt(ele.val()) >= parseInt(e.target.max)) {
-                            e.preventDefault();
-                        }
-                        if ((e.target.value.indexOf('.') !== -1) &&
-                            (e.target.value.substring(e.target.value.indexOf('.')).length > scope.digitNumber) &&
+                        if ((ele.val().indexOf('.') !== -1) &&
+                            (ele.val().substring(ele.val().indexOf('.')).length > scope.digitNumber) &&
                             (e.which !== 0 && e.which !== 8) &&
-                            (e.target.selectionStart >= e.target.value.length - parseInt(scope.digitNumber))) {
+                            (e.target.selectionStart >= ele.val().length - parseInt(scope.digitNumber))) {
                             e.preventDefault();
                         }
                     };
@@ -115,25 +113,35 @@ app.directive("tplNumber", function () {
                         } else {
                             //Anything else
                         }
+                        scope.ngVal = ele.val();
                     };
 
                     function replaceAt(str, index, replace) {
                         return str.substr(0, index) + replace + str.substr(index + replace.length);
                     }
 
-                    function checkMaxValue(c, i) {
-                        if(!c || !i) {
-                            return false;
+                    function checkMaxValue(inputValue) {
+                        if (!isFinite(inputValue)) {
+                            return true;
                         }
-                        var s = c.toString(), p = s.indexOf(".");
-                        var l = s.substr(0, p), r = s.substr(p + 1), v = "";
-                        if(r.length > 0) {
-                            v = parseFloat(l.toString() + i.toString() + "." + r);
+                        scope.ngVal = ele.val();
+
+                        var s = scope.ngVal.toString(), p = s.indexOf(".");
+                        var l = s, r = "", v = "";
+                        if (p !== -1) {
+                            l = s.substr(0, p);
+                            r = s.substr(p + 1);
+                            if (p < ele[0].selectionStart) {
+                                //var cur_pos = ele[0].selectionStart;
+                                v = parseFloat(l.concat(".", replaceAt(r, ele[0].selectionStart, inputValue)));
+                                //ele[0].selectionStart = cur_pos + 1;
+                            } else {
+                                v = parseFloat(l.concat(inputValue, ".", r));
+                            }
                         } else {
-                            v = parseFloat(l.toString() + i.toString());
+                            v = parseFloat(l.concat(inputValue));
                         }
-                        console.log("FFFFFF", c, v, r, scope.ngVal);
-                        if(isFinite(scope.max) && v > parseInt(scope.max)) {
+                        if (isFinite(scope.max) && v > parseInt(scope.max)) {
                             return true;
                         } else {
                             return false;
