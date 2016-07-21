@@ -53,8 +53,8 @@ app.directive("tplNumber", function () {
 
                     scope.bindNumber = function (e) {
                         var arrayAllow = [46, 8, 27, 13, 38, 40, 190, 110];
-                        if (e.keyCode >= 48 && e.keyCode <= 57) {
-                            var iVal = String.fromCharCode(e.keyCode);
+                        if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) {
+                            var iVal = fromKeyCode(e.keyCode);
                             if (checkMaxValue(iVal)) {
                                 e.preventDefault();
                             }
@@ -68,7 +68,11 @@ app.directive("tplNumber", function () {
                                 } else {
                                     var cur_pos = e.target.selectionStart;
                                     ele.val(replaceAt(ele.val(), e.target.selectionStart, iVal));
-                                    e.target.selectionStart = cur_pos + 1;
+                                    if (cur_pos + 1 >= ele.val().length) {
+                                        e.target.selectionStart = ele.val().length - 1;
+                                    } else {
+                                        e.target.selectionStart = cur_pos + 1;
+                                    }
                                 }
                             }
                             scope.ngVal = ele.val();
@@ -120,6 +124,11 @@ app.directive("tplNumber", function () {
                         return str.substr(0, index) + replace + str.substr(index + replace.length);
                     }
 
+                    function fromKeyCode(keyCode) {
+                        var code = (96 <= keyCode && keyCode <= 105) ? keyCode - 48 : keyCode;
+                        return String.fromCharCode(code);
+                    }
+
                     function checkMaxValue(inputValue) {
                         if (!isFinite(inputValue)) {
                             return true;
@@ -132,9 +141,8 @@ app.directive("tplNumber", function () {
                             l = s.substr(0, p);
                             r = s.substr(p + 1);
                             if (p < ele[0].selectionStart) {
-                                //var cur_pos = ele[0].selectionStart;
-                                v = parseFloat(l.concat(".", replaceAt(r, ele[0].selectionStart, inputValue)));
-                                //ele[0].selectionStart = cur_pos + 1;
+                                r = replaceAt(r, ele[0].selectionStart, inputValue);
+                                v = parseFloat(l.concat(".", r));
                             } else {
                                 v = parseFloat(l.concat(inputValue, ".", r));
                             }
