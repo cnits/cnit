@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html ng-app="cnit">
-    <head lang="en">
-        <meta charset="UTF-8">
-        <title>C-NIT</title>
-        <script src="/lib/built-in/angularjs/angular.min.js"></script>
-        <script src="app/js/cnit.js"></script>
-    </head>
-    <body ng-controller="RelatedController">
-        <!--<div>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>C-NIT</title>
+    <script src="/lib/built-in/angularjs/angular.min.js"></script>
+    <script src="app/js/cnit.js"></script>
+    <script src="/lib/built-in/libs/jquery-1.12.3.min.js"></script>
+    <!--<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>-->
+    <script src="/lib/built-in/libs/jquery.number.js"></script>
+</head>
+
+<body ng-controller="RelatedController">
+    <!--<div>
             <input type="text" ng-model="cnit" placeholder="Enter your text here...">
             <h1>C-NIT: {{cnit}}</h1>
         </div>
@@ -18,6 +23,8 @@
             <button ng-click="tat()" ng-show="playing">Tắt</button>
             Playing audio: {{playing}}
         </div>-->
-        <tpl-number digit-number="5" ng-val="T" max="2000"></tpl-number>
-    </body>
+    <tpl-jquery-number digit-number="5" ng-val="T" max="5"></tpl-jquery-number>
+    <tpl-jquery-number digit-number="3" ng-val="T2" max="4"></tpl-jquery-number>
+</body>
+
 </html>
