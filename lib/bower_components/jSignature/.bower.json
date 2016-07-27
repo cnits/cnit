@@ -1,0 +1,38 @@
+{
+  "name": "jSignature",
+  "version": "2.0.2",
+  "homepage": "https://github.com/brinley/jSignature",
+  "description": "jQuery plugin for handling digital signatures",
+  "main": [
+    "src/jSignature.js",
+    "src/plugins/jSignature.CompressorBase30.js",
+    "src/plugins/jSignature.CompressorSVG.js",
+    "src/plugins/jSignature.UndoButton.js"
+  ],
+  "keywords": [
+    "jSignature",
+    "signature",
+    "jQuery"
+  ],
+  "authors": [
+    "Brinley Ang"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "2.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.0.2",
+    "commit": "8566ab10d9c0b4a60228c35404b171c82264fc3a"
+  },
+  "_source": "https://github.com/brinley/jSignature.git",
+  "_target": "^2.0.2",
+  "_originalSource": "jSignature",
+  "_direct": true
+}
