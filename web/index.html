@@ -9,6 +9,13 @@
     <script src="/lib/built-in/libs/jquery-1.12.3.min.js"></script>
     <!--<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>-->
     <script src="/lib/built-in/libs/jquery.number.js"></script>
+    <link href="/lib/bower_components/signature-pad/assets/jquery.signaturepad.css" rel="stylesheet">
+    <script src="/lib/bower_components/signature-pad/jquery.signaturepad.js"></script>
+    <script src="/lib/bower_components/signature-pad/assets/json2.min.js"></script>
+
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 </head>
 
 <body ng-controller="RelatedController">
@@ -23,9 +30,182 @@
             <button ng-click="tat()" ng-show="playing">Tắt</button>
             Playing audio: {{playing}}
         </div>-->
-    <tpl-jquery-number digit-number="5" ng-val="T" max="5"></tpl-jquery-number>
+    <!--<tpl-jquery-number digit-number="5" ng-val="T" max="5"></tpl-jquery-number>
     <tpl-jquery-number digit-number="3" ng-val="T2" max="4"></tpl-jquery-number>
-    <tpl-number digit-number="3" ng-val="T2" max="10000000"></tpl-number>
+    <tpl-number digit-number="3" ng-val="T2" max="10000000"></tpl-number>-->
+
+    <table border="1" aria-rowspan="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Signature</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Nguyen Van Giai</td>
+                <td>11</td>
+                <td><div id="YourSignID" contenteditable="true" style="height: 75px; width: 400px; background-color: #FFF;"></div></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="#myPopup" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all" data-overlay-theme="b" data-position-to="window"
+        data-transition="flow">Sign your name</a>
+
+    <div data-role="popup" id="myPopup">
+        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+        <div id="CanvasSign" style="margin:0; padding: 10px;" class="m-signature-pad">
+            <canvas id="signature-id" class="pad" style="border: 1px solid #FF0000"></canvas>
+            <input type="button" name="OK" value="Agree" />
+            <input type="button" name="CLEAR" value="Re-Sign" />
+        </div>
+    </div>
+
+    <script>
+        (function(window) {
+            var $canvas,
+                onResize = function(event) {
+                    $canvas.attr({
+                        height: 100
+                    });
+                };
+
+            $(document).ready(function() {
+                $canvas = $('canvas');
+                window.addEventListener('orientationchange', onResize, false);
+                window.addEventListener('resize', onResize, false);
+                onResize();
+
+                $('#CanvasSign').signaturePad({
+                    drawOnly: true,
+                    defaultAction: 'drawIt',
+                    validateFields: true,
+                    lineWidth: 0,
+                    clear: 'input[name=CLEAR]'
+                });
+                $("input[name=OK]").click(function() {
+                    var image = $('#CanvasSign').signaturePad().getSignatureImage();//$("#signature-id")[0].toDataURL("image/png");
+                    $("#YourSignID").append('<img height="20px" width="60px" src="' + image +  '">');
+                });
+                $("#myPopup").on("popupafterclose", function(event) {
+                    $('#CanvasSign').signaturePad().clearCanvas();
+                });
+            });
+  }(this));
+
+  </script>
+    <style type="text/css">
+        body {
+            font-family: Helvetica, Sans-Serif;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .m-signature-pad {
+            position: relative;
+            font-size: 10px;
+            width: 400px;
+            height: 400px;
+            border: 1px solid #e8e8e8;
+            background-color: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.08) inset;
+            border-radius: 4px;
+        }
+        
+        .m-signature-pad:before,
+        .m-signature-pad:after {
+            position: absolute;
+            z-index: -1;
+            content: "";
+            width: 40%;
+            height: 10px;
+            left: 20px;
+            bottom: 10px;
+            background: transparent;
+            -webkit-transform: skew(-3deg) rotate(-3deg);
+            -moz-transform: skew(-3deg) rotate(-3deg);
+            -ms-transform: skew(-3deg) rotate(-3deg);
+            -o-transform: skew(-3deg) rotate(-3deg);
+            transform: skew(-3deg) rotate(-3deg);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .m-signature-pad:after {
+            left: auto;
+            right: 20px;
+            -webkit-transform: skew(3deg) rotate(3deg);
+            -moz-transform: skew(3deg) rotate(3deg);
+            -ms-transform: skew(3deg) rotate(3deg);
+            -o-transform: skew(3deg) rotate(3deg);
+            transform: skew(3deg) rotate(3deg);
+        }
+        
+        .m-signature-pad--body {
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            top: 20px;
+            bottom: 20px;
+            border: 1px solid #f4f4f4;
+        }
+        
+        .m-signature-pad--body canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.02) inset;
+        }
+        
+        @media screen and (max-width: 1024px) {
+            .m-signature-pad {
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: auto;
+                height: auto;
+                min-width: 250px;
+                min-height: 250px;
+                margin: 5%;
+            }
+            #github {
+                display: none;
+            }
+        }
+        
+        @media screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+            .m-signature-pad {
+                margin: 10%;
+            }
+        }
+        
+        @media screen and (max-height: 320px) {
+            .m-signature-pad--body {
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 32px;
+            }
+            .m-signature-pad--footer {
+                left: 20px;
+                right: 20px;
+                bottom: 4px;
+                height: 28px;
+            }
+            .m-signature-pad--footer .description {
+                font-size: 1em;
+                margin-top: 1em;
+            }
+        }
+    </style>
 </body>
 
 </html>
