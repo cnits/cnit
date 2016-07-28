@@ -13,7 +13,7 @@
     <script src="/lib/bower_components/signature-pad/jquery.signaturepad.js"></script>
     <script src="/lib/bower_components/signature-pad/assets/json2.min.js"></script>
 
-
+    <script src="/lib/bower_components/signature_pad/signature_pad.js"></script>
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 </head>
@@ -48,20 +48,38 @@
                 <td>1</td>
                 <td>Nguyen Van Giai</td>
                 <td>11</td>
-                <td><div id="YourSignID" contenteditable="true" style="height: 75px; width: 400px; background-color: #FFF;"></div></td>
+                <td>
+                    <div id="YourSignID" contenteditable="true" style="height: 75px; width: 400px; background-color: #FFF;"></div>
+                </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="#myPopup" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all" data-overlay-theme="b" data-position-to="window"
-        data-transition="flow">Sign your name</a>
+    <a href="#pSignPad" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all" data-overlay-theme="b" data-position-to="window"
+        data-transition="flow">Sign your name with Signature-Pad</a>
 
-    <div data-role="popup" id="myPopup">
+    <a href="#pSign_Pad" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all" data-overlay-theme="b" data-position-to="window"
+        data-transition="flow">Sign your name with Signature_Pad</a>
+
+    <div data-role="popup" id="pSignPad">
         <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
         <div id="CanvasSign" style="margin:0; padding: 10px;" class="m-signature-pad">
             <canvas id="signature-id" class="pad" style="border: 1px solid #FF0000"></canvas>
             <input type="button" name="OK" value="Agree" />
             <input type="button" name="CLEAR" value="Re-Sign" />
+        </div>
+    </div>
+
+
+
+    <div data-role="popup" id="pSign_Pad">
+        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+        <div class="wrapper">
+            <canvas id="signature-pad" class="signature-pad" width=400 height=200></canvas>
+        </div>
+        <div>
+            <button id="save">Save</button>
+            <button id="clear">Clear</button>
         </div>
     </div>
 
@@ -80,7 +98,7 @@
                 window.addEventListener('resize', onResize, false);
                 onResize();
 
-                $('#CanvasSign').signaturePad({
+                var signPad = $('#CanvasSign').signaturePad({
                     drawOnly: true,
                     defaultAction: 'drawIt',
                     validateFields: true,
@@ -88,11 +106,45 @@
                     clear: 'input[name=CLEAR]'
                 });
                 $("input[name=OK]").click(function() {
-                    var image = $('#CanvasSign').signaturePad().getSignatureImage();//$("#signature-id")[0].toDataURL("image/png");
+                    var image = signPad.getSignatureImage();//$("#signature-id")[0].toDataURL("image/png");
                     $("#YourSignID").append('<img height="20px" width="60px" src="' + image +  '">');
                 });
                 $("#myPopup").on("popupafterclose", function(event) {
-                    $('#CanvasSign').signaturePad().clearCanvas();
+                    signPad.clearCanvas();
+
+                    signaturePad.clear();
+                });
+
+
+                //----------------------------Signature_Pad Lib------------------------------------------//
+                var canvas = document.querySelector("canvas");
+                var signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+                    backgroundColor: 'rgba(255, 255, 255, 0)',
+                    penColor: 'rgb(0, 0, 0)'
+                });
+                function resizeCanvas() {
+                    var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+                    canvas.width = canvas.offsetWidth * ratio;
+                    canvas.height = canvas.offsetHeight * ratio;
+                    canvas.getContext("2d").scale(ratio, ratio);
+                    signaturePad.clear(); // otherwise isEmpty() might return incorrect value
+                }
+
+                window.addEventListener("resize", resizeCanvas);
+                resizeCanvas();
+                
+                var saveButton = document.getElementById('save');
+                var cancelButton = document.getElementById('clear');
+
+                saveButton.addEventListener('click', function (event) {
+                    var data = signaturePad.toDataURL('image/png');
+                    if(!signaturePad.isEmpty()) {
+                        $("#YourSignID").append('<img height="20px" width="60px" src="' + data +  '">');
+                    }
+                });
+
+                cancelButton.addEventListener('click', function (event) {
+                    signaturePad.clear();
                 });
             });
   }(this));
@@ -205,6 +257,29 @@
                 margin-top: 1em;
             }
         }
+        /*Sign_Pad*/
+        
+        .wrapper {
+            position: relative;
+            width: 400px;
+            height: 200px;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        /*img {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }*/
+        /*.signature-pad {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 400px;
+            height: 200px;
+        }*/
     </style>
 </body>
 
