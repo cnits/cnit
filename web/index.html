@@ -49,17 +49,25 @@
                 <td>Nguyen Van Giai</td>
                 <td>11</td>
                 <td>
-                    <div id="YourSignID" contenteditable="true" style="height: 75px; width: 400px; background-color: #FFF;"></div>
+                    <div onclick="focusSign(this)" contenteditable="true" style="height: 75px; width: 400px; background-color: #FFF;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Dien Bien Phu</td>
+                <td>12</td>
+                <td>
+                    <div onclick="focusSign(this)" contenteditable="true" style="height: 75px; width: 400px; background-color: #FFF;"></div>
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="#pSignPad" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all" data-overlay-theme="b" data-position-to="window"
+    <!--<a href="#pSignPad" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all" data-overlay-theme="b" data-position-to="window"
         data-transition="flow">Sign your name with Signature-Pad</a>
 
     <a href="#pSign_Pad" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all" data-overlay-theme="b" data-position-to="window"
-        data-transition="flow">Sign your name with Signature_Pad</a>
+        data-transition="flow">Sign your name with Signature_Pad</a>-->
 
     <div data-role="popup" id="pSignPad">
         <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
@@ -84,6 +92,11 @@
     </div>
 
     <script>
+        var _this;
+        function focusSign(e) {
+            _this = e;
+            $("#pSign_Pad").popup("open");
+        }
         (function(window) {
             var $canvas,
                 onResize = function(event) {
@@ -91,7 +104,7 @@
                         height: 100
                     });
                 };
-
+            
             $(document).ready(function() {
                 $canvas = $('canvas');
                 window.addEventListener('orientationchange', onResize, false);
@@ -109,9 +122,10 @@
                     var image = signPad.getSignatureImage();//$("#signature-id")[0].toDataURL("image/png");
                     $("#YourSignID").append('<img height="20px" width="60px" src="' + image +  '">');
                 });
-                $("#myPopup").on("popupafterclose", function(event) {
+                $("#pSignPad").on("popupafterclose", function(event) {
                     signPad.clearCanvas();
-
+                });
+                 $("#pSign_Pad").on("popupafterclose", function(event) {
                     signaturePad.clear();
                 });
 
@@ -139,7 +153,12 @@
                 saveButton.addEventListener('click', function (event) {
                     var data = signaturePad.toDataURL('image/png');
                     if(!signaturePad.isEmpty()) {
-                        $("#YourSignID").append('<img height="20px" width="60px" src="' + data +  '">');
+                        //$("#YourSignID").append('<img height="40px" width="80px" src="' + data +  '">');
+                        var d = $("#DI12", _this);
+                        if(d.length > 0) {
+                            d.remove();
+                        }
+                        $(_this).append('<div id="DI12"><img height="40px" width="80px" src="' + data +  '"></div>');
                     }
                 });
 
