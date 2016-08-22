@@ -2,15 +2,21 @@
 <html>
 
 <head lang="en">
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>C-NIT</title>
-    <script src="/lib/built-in/reactjs/react.js"></script>
-    <script src="/lib/built-in/reactjs/react-dom.js"></script>
+    <script src="/lib/bower_components/react/react.js"></script>
+    <script src="/lib/bower_components/react/react-dom.js"></script>
     <script src="/lib/built-in/libs/jquery-1.12.3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
-    <!--<script src="/web/app-react/photo-gallery.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+    <script type="text/babel" src="/web/app-react/photo-gallery.js"></script>
 
-    <script type="text/javascript">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.css" />
+    <link rel="stylesheet" href="https://demos.jquerymobile.com/1.4.5/_assets/css/jqm-demos.css" />
+
+    <script type="text/babel">
         var ExampleApplication = React.createClass({
             render: function() {
                 var elapsed = Math.round(this.props.elapsed / 100);
