@@ -50,13 +50,11 @@ var PhotoGallery = React.createClass({
     var data = this.getData();
     var photos = data.map(function(photo) {
       //For JSX
-      //return < Photo src={photo.src} caption={photo.caption}/>
-      return React.renderComponent(Photo({src: photo.src, caption: photo.caption}));
+      return (<Photo src={photo.url} caption={photo.caption}/>);
     });
-    //return (<div class='photo-gallery'>{photos}</div>)
-    return React.DOM.div({class: 'photo-gallery'}, photo);
+    return (<div class='photo-gallery'>{photos}</div>)
+    //return React.DOM.div({class: 'photo-gallery'}, photos);
   }
 });
 
-//React.render(<PhotoGallery />, document.getElementById("photo-gallery"));
-React.renderComponent(PhotoGallery(), document.getElementById("photo-gallery"));
+ReactDOM.render(<PhotoGallery />, document.getElementById("photo-gallery"));
