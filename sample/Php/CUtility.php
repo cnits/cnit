@@ -49,4 +49,87 @@ final class CUtility
 		//$str = preg_replace('/([a-z0-9])?([A-Z])/','$1-$2', $str);
         return trim(preg_replace("/([A-Z])/", " $0", $str));
 	}
+
+    public static function writeToCsv($path, array $data, $fields = array()) {
+        $fcsv = fopen($path, "w") or die("Can't open file!");
+        if (count($fields) === count($data[0])) {
+            array_unshift($data, $fields);
+        }
+        foreach ($data as $row) {
+            fputcsv($fcsv, $row);
+        }
+        fclose($fcsv);
+    }
+
+    public static function exportToCsv($fields = null, $array) {
+        $out = "";
+        foreach ($array as $arr) {
+            //$out .= implode(",", $arr) . "\r\n";
+            $vals = array();
+            foreach ($arr as $key => $value) {
+                $value = htmlspecialchars_decode($value);
+                $value = str_replace('"', '""', $value);
+                $value = '"' . $value . '"';
+                $value = str_replace('–', '-', $value);
+                $value = str_replace('“', '""', $value);
+                $value = str_replace('”', '""', $value);
+                $vals[] = $value;
+            }
+            $out .= implode(",", $vals) . "\r\n";
+        }
+        $strFields = "";
+        if (!is_null($fields)) {
+            $strFields = implode(",", $fields) . "\r\n";
+        }
+        return $strFields . $out;
+    }
+
+    public static function convertIndexed2AssociativeArray($keys, $array) {
+        if (empty($keys) || empty($array)) {
+            return null;
+        }
+        $results = array();
+        if (is_array($array[0])) {
+            foreach ($array as $item) {
+                $results[] = array_combine($keys, $item);
+            }
+        } else {
+            if (count($keys) === count($array)) {
+                return array_combine($keys, $array);
+            }
+        }
+        return $results;
+    }
+
+    public static function validateDateStr($str) {
+        if (empty($str) || !is_string($str)) {
+            return false;
+        } else {
+            $pattern1 = "/^((\d{4}\-\d{1,2}\-\d{1,2})|(\d{4}\/\d{1,2}\/\d{1,2})|(\d{1,2}\-\d{1,2}\-\d{4})|(\d{1,2}\/\d{1,2}\/\d{4}))( \d{2}\:\d{2})?$/";
+            $pattern2 = "/^((\d{4}\-\d{1,2}\-\d{1,2})|(\d{4}\/\d{1,2}\/\d{1,2})|(\d{1,2}\-\d{1,2}\-\d{4})|(\d{1,2}\/\d{1,2}\/\d{4}))( \d{2}\:\d{2}\:\d{2})?$/";
+            if (preg_match($pattern1, $str) || preg_match($pattern2, $str)) {
+                try {
+                    $date = new \DateTime($str, new \DateTimeZone("UTC"));
+                    if ($date instanceof \DateTime) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (\Exception $ex) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public static function decodeHtmlSpecialCode($str) {
+        if (!function_exists('htmlspecialchars_decode')) {
+            function htmlspecialchars_decode($str) {
+                return strtr($str, array_flip(get_html_translation_table(HTML_SPECIALCHARS)));
+            }
+        }
+        return htmlspecialchars_decode($str);
+    }
 }
